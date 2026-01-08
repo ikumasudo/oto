@@ -1,0 +1,202 @@
+name: Build and Release Installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  APP_NAME: 'VoiceToText'
+  MAIN_PROJECT: 'src/VoiceToText.App/VoiceToText.App.csproj'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag or input
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ github.event.inputs.version }}"
+          } else {
+            $version = "${{ github.ref_name }}".TrimStart('v')
+          }
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "Version: $version"
+
+      - name: Restore dependencies
+        run: dotnet restore VoiceToText.slnx
+
+      - name: Build application
+        run: dotnet build VoiceToText.slnx -c Release --no-restore
+
+      - name: Publish self-contained application
+        shell: pwsh
+        run: |
+          dotnet publish ${{ env.MAIN_PROJECT }} `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:Version=${{ steps.version.outputs.VERSION }} `
+            -o ./publish
+
+      - name: Create placeholder icon if not exists
+        shell: pwsh
+        run: |
+          $iconPath = "installer/assets/app.ico"
+          if (-not (Test-Path $iconPath)) {
+            Write-Host "Creating placeholder icon..."
+
+            Add-Type -AssemblyName System.Drawing
+
+            # Create a 256x256 bitmap with a microphone-like design
+            $size = 256
+            $bitmap = New-Object System.Drawing.Bitmap($size, $size)
+            $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+            $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+            $graphics.Clear([System.Drawing.Color]::Transparent)
+
+            # Blue gradient background circle
+            $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(33, 150, 243))
+            $graphics.FillEllipse($brush, 20, 20, 216, 216)
+
+            # White microphone shape
+            $whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
+            # Mic head (rounded rectangle approximated with ellipse)
+            $graphics.FillEllipse($whiteBrush, 88, 50, 80, 100)
+            # Mic body
+            $graphics.FillRectangle($whiteBrush, 108, 140, 40, 30)
+            # Mic stand base
+            $graphics.FillRectangle($whiteBrush, 88, 170, 80, 15)
+            $graphics.FillRectangle($whiteBrush, 118, 185, 20, 25)
+
+            # Save as ICO format
+            $icon = [System.Drawing.Icon]::FromHandle($bitmap.GetHicon())
+            $fs = [System.IO.File]::Create($iconPath)
+            $icon.Save($fs)
+            $fs.Close()
+
+            $graphics.Dispose()
+            $bitmap.Dispose()
+
+            Write-Host "Placeholder icon created at $iconPath"
+          } else {
+            Write-Host "Icon already exists at $iconPath"
+          }
+
+      - name: Update version in ISS file
+        shell: pwsh
+        run: |
+          $issFile = "installer/VoiceToText.iss"
+          $content = Get-Content $issFile -Raw
+          $content = $content -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"${{ steps.version.outputs.VERSION }}`""
+          Set-Content -Path $issFile -Value $content -NoNewline
+          Write-Host "Updated version to ${{ steps.version.outputs.VERSION }}"
+
+      - name: Create output directory
+        run: New-Item -ItemType Directory -Force -Path output
+        shell: pwsh
+
+      - name: Download and install Inno Setup
+        shell: pwsh
+        run: |
+          $innoUrl = "https://jrsoftware.org/download.php/is.exe"
+          $innoInstaller = "$env:TEMP\innosetup.exe"
+
+          Write-Host "Downloading Inno Setup..."
+          Invoke-WebRequest -Uri $innoUrl -OutFile $innoInstaller -UseBasicParsing
+
+          Write-Host "Installing Inno Setup silently..."
+          Start-Process -FilePath $innoInstaller -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait
+
+          Write-Host "Inno Setup installed successfully"
+
+      - name: Build installer with Inno Setup
+        shell: pwsh
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          & $iscc "installer\VoiceToText.iss"
+
+          # Verify output
+          $installer = Get-ChildItem "output\*.exe" | Select-Object -First 1
+          if ($installer) {
+            Write-Host "Installer created: $($installer.Name) ($([math]::Round($installer.Length / 1MB, 2)) MB)"
+          } else {
+            throw "Installer was not created"
+          }
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceToText-Setup-${{ steps.version.outputs.VERSION }}
+          path: output/VoiceToText-Setup-*.exe
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Download installer artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: VoiceToText-Setup-${{ steps.version.outputs.VERSION }}
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: VoiceToText v${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          body: |
+            ## Installation
+
+            1. Download `VoiceToText-Setup-${{ steps.version.outputs.VERSION }}.exe`
+            2. Run the installer
+            3. Launch VoiceToText from Start Menu or Desktop
+            4. Right-click the system tray icon > Settings > Enter your OpenAI API Key
+
+            ## Requirements
+
+            - Windows 10/11 (64-bit)
+            - OpenAI API Key
+            - No .NET runtime installation required
+
+            ## Usage
+
+            - Hold **Ctrl+Alt+Space** to record
+            - Release to transcribe and paste
+          files: |
+            ./artifacts/VoiceToText-Setup-*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

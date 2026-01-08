@@ -12,27 +12,37 @@ WPF System Tray application that records voice using a hotkey and transcribes it
 - **History**: View and copy recent transcriptions
 - **Secure API Key Storage**: Uses Windows DPAPI encryption
 
-## Requirements
+## Installation
 
-- Windows 10/11
-- .NET 9.0 SDK
-- OpenAI API Key
+### Download (Recommended)
 
-## Quick Start
+1. Go to [Releases](https://github.com/be4rr/VoiceToText/releases/latest)
+2. Download `VoiceToText-Setup-X.X.X.exe`
+3. Run the installer
+4. Launch VoiceToText from Start Menu or Desktop
 
-### Build and Run
+**No .NET runtime installation required** - the application is fully self-contained.
+
+### Build from Source
 
 ```bash
-cd C:\Users\be4rr\VoiceToText
+# Clone the repository
+git clone https://github.com/be4rr/VoiceToText.git
+cd VoiceToText
+
+# Build and run
 dotnet build
 dotnet run --project src/VoiceToText.App
-```
 
-### Publish (Self-contained)
-
-```bash
+# Or publish self-contained
 dotnet publish src/VoiceToText.App -c Release -r win-x64 --self-contained -o ./publish
 ```
+
+## Requirements
+
+- Windows 10/11 (64-bit)
+- OpenAI API Key
+- .NET 9.0 SDK (only for building from source)
 
 ## Usage
 
@@ -120,6 +130,13 @@ Open Settings and enter your OpenAI API key.
 - Verify your API key is valid
 - Check your internet connection
 - Review the error message in the balloon notification
+
+## Uninstall
+
+1. Open **Settings** > **Apps** > **Apps & features**
+2. Find **VoiceToText** and click **Uninstall**
+
+Settings are stored in `%LOCALAPPDATA%\VoiceToText\` (delete manually to remove all data).
 
 ## License
 
