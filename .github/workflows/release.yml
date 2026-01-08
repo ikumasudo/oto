@@ -64,6 +64,10 @@ jobs:
         shell: pwsh
         run: |
           $iconPath = "installer/assets/app.ico"
+          $iconDir = Split-Path -Parent $iconPath
+          if (-not (Test-Path $iconDir)) {
+            New-Item -ItemType Directory -Path $iconDir -Force | Out-Null
+          }
           if (-not (Test-Path $iconPath)) {
             Write-Host "Creating placeholder icon..."
 
