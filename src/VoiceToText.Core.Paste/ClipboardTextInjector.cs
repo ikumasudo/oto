@@ -81,28 +81,8 @@ public sealed class ClipboardTextInjector : ITextInjector
         // Execute clipboard operations on UI thread
         return await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            string? originalClipboardContent = null;
-            bool hadTextContent = false;
-
             try
             {
-                // Save original clipboard content if restore is enabled
-                if (Options.RestoreClipboard)
-                {
-                    try
-                    {
-                        if (Clipboard.ContainsText())
-                        {
-                            originalClipboardContent = Clipboard.GetText();
-                            hadTextContent = true;
-                        }
-                    }
-                    catch
-                    {
-                        // Ignore clipboard read errors
-                    }
-                }
-
                 // Set text to clipboard with retry
                 SetClipboardText(text);
 
@@ -111,28 +91,6 @@ public sealed class ClipboardTextInjector : ITextInjector
 
                 // Send Ctrl+V
                 SendCtrlV();
-
-                // Small delay before restoring clipboard
-                if (Options.RestoreClipboard)
-                {
-                    Thread.Sleep(150);
-
-                    try
-                    {
-                        if (hadTextContent && originalClipboardContent != null)
-                        {
-                            SetClipboardText(originalClipboardContent);
-                        }
-                        else if (!hadTextContent)
-                        {
-                            Clipboard.Clear();
-                        }
-                    }
-                    catch
-                    {
-                        // Ignore clipboard restore errors
-                    }
-                }
 
                 return new TextInjectionResult { Success = true };
             }

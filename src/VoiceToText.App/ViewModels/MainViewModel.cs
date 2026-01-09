@@ -92,7 +92,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _hotkey.Hotkey = new HotkeyDefinition(_settings.Hotkey.Modifiers, _settings.Hotkey.Key);
         _audioRecorder.MaxRecordingSeconds = _settings.MaxRecordingSeconds;
         _transcriptionService.ApiKey = _settings.ApiKey;
-        _textInjector.Options = new TextInjectionOptions { RestoreClipboard = _settings.RestoreClipboard };
+        _textInjector.Options = new TextInjectionOptions();
 
         IsApiKeyConfigured = !string.IsNullOrWhiteSpace(_settings.ApiKey);
     }

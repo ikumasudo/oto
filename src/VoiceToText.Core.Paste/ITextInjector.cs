@@ -6,11 +6,6 @@ namespace VoiceToText.Core.Paste;
 public class TextInjectionOptions
 {
     /// <summary>
-    /// Whether to restore the original clipboard content after injection
-    /// </summary>
-    public bool RestoreClipboard { get; set; } = true;
-
-    /// <summary>
     /// Delay in milliseconds before sending Ctrl+V after setting clipboard
     /// </summary>
     public int PasteDelayMs { get; set; } = 50;

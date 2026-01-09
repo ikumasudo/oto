@@ -82,7 +82,6 @@ public partial class SettingsWindow : Window
         // Options
         AddPunctuationCheckBox.IsChecked = _settings.AddPunctuation;
         PreserveNewlinesCheckBox.IsChecked = _settings.PreserveNewlines;
-        RestoreClipboardCheckBox.IsChecked = _settings.RestoreClipboard;
     }
 
     private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -99,8 +98,7 @@ public partial class SettingsWindow : Window
             MaxRecordingSeconds = int.Parse((MaxDurationComboBox.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "60"),
             Language = string.IsNullOrWhiteSpace(LanguageBox.Text) ? null : LanguageBox.Text.Trim(),
             AddPunctuation = AddPunctuationCheckBox.IsChecked ?? true,
-            PreserveNewlines = PreserveNewlinesCheckBox.IsChecked ?? true,
-            RestoreClipboard = RestoreClipboardCheckBox.IsChecked ?? true
+            PreserveNewlines = PreserveNewlinesCheckBox.IsChecked ?? true
         };
 
         DialogResult = true;
