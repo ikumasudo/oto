@@ -26,6 +26,7 @@ public class AppSettings
     public int MaxRecordingSeconds { get; set; } = 60;
     public bool AddPunctuation { get; set; } = true;
     public bool PreserveNewlines { get; set; } = true;
+    public bool SoundEffectsEnabled { get; set; } = true;
     public string? Language { get; set; }
 
     [JsonIgnore]

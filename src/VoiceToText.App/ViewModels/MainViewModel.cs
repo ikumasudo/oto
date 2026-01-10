@@ -30,6 +30,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ITranscriptionService _transcriptionService;
     private readonly ITextInjector _textInjector;
     private readonly TranscriptionHistory _history;
+    private readonly ISoundEffectPlayer _soundEffectPlayer;
 
     private AppSettings _settings;
     private bool _isDisposed;
@@ -59,6 +60,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _transcriptionService = new OpenAITranscriptionService();
         _textInjector = new ClipboardTextInjector();
         _history = new TranscriptionHistory();
+        _soundEffectPlayer = new SoundEffectPlayer();
         _settings = SettingsManager.Load();
 
         ApplySettings();
@@ -125,6 +127,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
+        if (_settings.SoundEffectsEnabled)
+        {
+            _soundEffectPlayer.PlayStartSound();
+        }
+
         Application.Current.Dispatcher.Invoke(() =>
         {
             State = AppState.Recording;
@@ -136,6 +143,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void OnHotkeyReleased(object? sender, EventArgs e)
     {
         if (State != AppState.Recording) return;
+
+        if (_settings.SoundEffectsEnabled)
+        {
+            _soundEffectPlayer.PlayStopSound();
+        }
 
         Application.Current.Dispatcher.Invoke(() =>
         {

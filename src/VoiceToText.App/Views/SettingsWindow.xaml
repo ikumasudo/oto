@@ -95,6 +95,7 @@
                 <TextBlock Text="Options" Style="{StaticResource LabelStyle}" Margin="0,8,0,8"/>
                 <CheckBox x:Name="AddPunctuationCheckBox" Content="Add punctuation" IsChecked="True"/>
                 <CheckBox x:Name="PreserveNewlinesCheckBox" Content="Preserve newlines" IsChecked="True"/>
+                <CheckBox x:Name="SoundEffectsCheckBox" Content="Enable sound effects" IsChecked="True"/>
             </StackPanel>
         </ScrollViewer>
 
