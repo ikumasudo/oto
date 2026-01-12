@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using VoiceToText.App.ViewModels;
@@ -132,15 +133,62 @@ public partial class App : Application
 
     private static Icon CreateDefaultIcon()
     {
-        // Create a simple icon programmatically
-        using var bitmap = new Bitmap(16, 16);
+        // Create a modern flat-style icon with purple gradient
+        using var bitmap = new Bitmap(32, 32);
         using var graphics = Graphics.FromImage(bitmap);
 
-        // Draw a microphone-like icon
+        // Enable high-quality rendering
+        graphics.SmoothingMode = SmoothingMode.HighQuality;
+        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
         graphics.Clear(Color.Transparent);
-        using var brush = new SolidBrush(Color.FromArgb(33, 150, 243)); // Blue
-        graphics.FillEllipse(brush, 4, 2, 8, 8);
-        graphics.FillRectangle(brush, 6, 10, 4, 4);
+
+        // Define colors (Material Design Purple)
+        var purpleLight = Color.FromArgb(171, 71, 188);   // #AB47BC
+        var purpleDark = Color.FromArgb(123, 31, 162);    // #7B1FA2
+        var highlight = Color.FromArgb(100, 225, 190, 231); // Semi-transparent #E1BEE7
+        var shadow = Color.FromArgb(40, 0, 0, 0);         // Light shadow
+
+        // Draw shadow for microphone head
+        using (var shadowBrush = new SolidBrush(shadow))
+        {
+            graphics.FillEllipse(shadowBrush, 8, 5, 16, 18);
+        }
+
+        // Microphone head with gradient
+        using (var gradientBrush = new LinearGradientBrush(
+            new Rectangle(7, 3, 18, 18),
+            purpleLight,
+            purpleDark,
+            LinearGradientMode.Vertical))
+        {
+            graphics.FillEllipse(gradientBrush, 7, 3, 18, 18);
+        }
+
+        // Microphone stand
+        using (var standBrush = new LinearGradientBrush(
+            new Rectangle(13, 20, 6, 6),
+            purpleLight,
+            purpleDark,
+            LinearGradientMode.Vertical))
+        {
+            graphics.FillRectangle(standBrush, 13, 20, 6, 6);
+        }
+
+        // Microphone base (arc shape)
+        using (var baseBrush = new SolidBrush(purpleDark))
+        using (var pen = new Pen(purpleDark, 2.5f))
+        {
+            pen.StartCap = LineCap.Round;
+            pen.EndCap = LineCap.Round;
+            graphics.DrawArc(pen, 9, 24, 14, 6, 0, 180);
+        }
+
+        // Highlight on microphone head (glossy effect)
+        using (var highlightBrush = new SolidBrush(highlight))
+        {
+            graphics.FillEllipse(highlightBrush, 10, 6, 6, 5);
+        }
 
         return Icon.FromHandle(bitmap.GetHicon());
     }
