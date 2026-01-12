@@ -13,8 +13,8 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  APP_NAME: 'VoiceToText'
-  MAIN_PROJECT: 'src/VoiceToText.App/VoiceToText.App.csproj'
+  APP_NAME: 'oto'
+  MAIN_PROJECT: 'src/oto.App/oto.App.csproj'
 
 jobs:
   build:
@@ -42,10 +42,10 @@ jobs:
           echo "Version: $version"
 
       - name: Restore dependencies
-        run: dotnet restore VoiceToText.slnx
+        run: dotnet restore oto.slnx
 
       - name: Build application
-        run: dotnet build VoiceToText.slnx -c Release --no-restore
+        run: dotnet build oto.slnx -c Release --no-restore
 
       - name: Publish self-contained application
         shell: pwsh
@@ -111,7 +111,7 @@ jobs:
       - name: Update version in ISS file
         shell: pwsh
         run: |
-          $issFile = "installer/VoiceToText.iss"
+          $issFile = "installer/oto.iss"
           $content = Get-Content $issFile -Raw
           $content = $content -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"${{ steps.version.outputs.VERSION }}`""
           Set-Content -Path $issFile -Value $content -NoNewline
@@ -139,7 +139,7 @@ jobs:
         shell: pwsh
         run: |
           $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-          & $iscc "installer\VoiceToText.iss"
+          & $iscc "installer\oto.iss"
 
           # Verify output
           $installer = Get-ChildItem "output\*.exe" | Select-Object -First 1
@@ -152,8 +152,8 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: VoiceToText-Setup-${{ steps.version.outputs.VERSION }}
-          path: output/VoiceToText-Setup-*.exe
+          name: oto-Setup-${{ steps.version.outputs.VERSION }}
+          path: output/oto-Setup-*.exe
           retention-days: 30
 
   release:
@@ -172,22 +172,22 @@ jobs:
       - name: Download installer artifact
         uses: actions/download-artifact@v4
         with:
-          name: VoiceToText-Setup-${{ steps.version.outputs.VERSION }}
+          name: oto-Setup-${{ steps.version.outputs.VERSION }}
           path: ./artifacts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: VoiceToText v${{ steps.version.outputs.VERSION }}
+          name: oto v${{ steps.version.outputs.VERSION }}
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           body: |
             ## Installation
 
-            1. Download `VoiceToText-Setup-${{ steps.version.outputs.VERSION }}.exe`
+            1. Download `oto-Setup-${{ steps.version.outputs.VERSION }}.exe`
             2. Run the installer
-            3. Launch VoiceToText from Start Menu or Desktop
+            3. Launch oto from Start Menu or Desktop
             4. Right-click the system tray icon > Settings > Enter your OpenAI API Key
 
             ## Requirements
@@ -201,6 +201,6 @@ jobs:
             - Hold **Ctrl+Alt+Space** to record
             - Release to transcribe and paste
           files: |
-            ./artifacts/VoiceToText-Setup-*.exe
+            ./artifacts/oto-Setup-*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

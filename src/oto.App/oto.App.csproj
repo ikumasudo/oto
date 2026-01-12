@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+
+    <!-- Application metadata -->
+    <Product>oto</Product>
+    <Description>Push-to-Talk Voice Transcription using OpenAI</Description>
+
+    <!-- Publishing settings for self-contained single file -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\oto.Core.Audio\oto.Core.Audio.csproj" />
+    <ProjectReference Include="..\oto.Core.Hotkey\oto.Core.Hotkey.csproj" />
+    <ProjectReference Include="..\oto.Core.OpenAI\oto.Core.OpenAI.csproj" />
+    <ProjectReference Include="..\oto.Core.Paste\oto.Core.Paste.csproj" />
+  </ItemGroup>
+
+</Project>

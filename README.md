@@ -1,4 +1,4 @@
-# VoiceToText - Push-to-Talk Voice Transcription App
+# oto - Push-to-Talk Voice Transcription App
 
 WPF System Tray application that records voice using a hotkey and transcribes it using OpenAI's Audio Transcriptions API, then pastes the text into the focused application.
 
@@ -16,10 +16,10 @@ WPF System Tray application that records voice using a hotkey and transcribes it
 
 ### Download (Recommended)
 
-1. Go to [Releases](https://github.com/be4rr/VoiceToText/releases/latest)
-2. Download `VoiceToText-Setup-X.X.X.exe`
+1. Go to [Releases](https://github.com/ikumasudo/oto/releases/latest)
+2. Download `oto-Setup-X.X.X.exe`
 3. Run the installer
-4. Launch VoiceToText from Start Menu or Desktop
+4. Launch oto from Start Menu or Desktop
 
 **No .NET runtime installation required** - the application is fully self-contained.
 
@@ -27,15 +27,15 @@ WPF System Tray application that records voice using a hotkey and transcribes it
 
 ```bash
 # Clone the repository
-git clone https://github.com/be4rr/VoiceToText.git
-cd VoiceToText
+git clone https://github.com/ikumasudo/oto.git
+cd oto
 
 # Build and run
 dotnet build
-dotnet run --project src/VoiceToText.App
+dotnet run --project src/oto.App
 
 # Or publish self-contained
-dotnet publish src/VoiceToText.App -c Release -r win-x64 --self-contained -o ./publish
+dotnet publish src/oto.App -c Release -r win-x64 --self-contained -o ./publish
 ```
 
 ## Requirements
@@ -69,14 +69,14 @@ Right-click the tray icon and select **Settings** to configure:
 ## Project Structure
 
 ```
-VoiceToText/
-├── VoiceToText.sln
+oto/
+├── oto.slnx
 ├── src/
-│   ├── VoiceToText.App/           # WPF UI, System Tray, Settings
-│   ├── VoiceToText.Core.Audio/    # NAudio recording, WAV encoding
-│   ├── VoiceToText.Core.Hotkey/   # Global keyboard hook (WH_KEYBOARD_LL)
-│   ├── VoiceToText.Core.OpenAI/   # OpenAI API client
-│   └── VoiceToText.Core.Paste/    # Clipboard + SendInput
+│   ├── oto.App/           # WPF UI, System Tray, Settings
+│   ├── oto.Core.Audio/    # NAudio recording, WAV encoding
+│   ├── oto.Core.Hotkey/   # Global keyboard hook (WH_KEYBOARD_LL)
+│   ├── oto.Core.OpenAI/   # OpenAI API client
+│   └── oto.Core.Paste/    # Clipboard + SendInput
 └── README.md
 ```
 
@@ -134,9 +134,9 @@ Open Settings and enter your OpenAI API key.
 ## Uninstall
 
 1. Open **Settings** > **Apps** > **Apps & features**
-2. Find **VoiceToText** and click **Uninstall**
+2. Find **oto** and click **Uninstall**
 
-Settings are stored in `%LOCALAPPDATA%\VoiceToText\` (delete manually to remove all data).
+Settings are stored in `%LOCALAPPDATA%\oto\` (delete manually to remove all data).
 
 ## License
 

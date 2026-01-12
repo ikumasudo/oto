@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/oto.App/oto.App.csproj" />
+    <Project Path="src/oto.Core.Audio/oto.Core.Audio.csproj" />
+    <Project Path="src/oto.Core.Hotkey/oto.Core.Hotkey.csproj" />
+    <Project Path="src/oto.Core.OpenAI/oto.Core.OpenAI.csproj" />
+    <Project Path="src/oto.Core.Paste/oto.Core.Paste.csproj" />
+  </Folder>
+</Solution>

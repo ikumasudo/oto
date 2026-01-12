@@ -1,0 +1,151 @@
+<Window x:Class="oto.App.Views.StatusIndicator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="oto Status"
+        Width="44" Height="44"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual">
+
+    <Window.Resources>
+        <!-- Wave ring expand animation -->
+        <Storyboard x:Key="WaveAnimation" RepeatBehavior="Forever">
+            <!-- Ring 1 -->
+            <DoubleAnimation Storyboard.TargetName="WaveRing1"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.6" To="0" Duration="0:0:1.2"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing1Transform"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.5" To="1.3" Duration="0:0:1.2"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing1Transform"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.5" To="1.3" Duration="0:0:1.2"/>
+
+            <!-- Ring 2 (delayed) -->
+            <DoubleAnimation Storyboard.TargetName="WaveRing2"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.6" To="0" Duration="0:0:1.2" BeginTime="0:0:0.4"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing2Transform"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.5" To="1.3" Duration="0:0:1.2" BeginTime="0:0:0.4"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing2Transform"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.5" To="1.3" Duration="0:0:1.2" BeginTime="0:0:0.4"/>
+
+            <!-- Ring 3 (more delayed) -->
+            <DoubleAnimation Storyboard.TargetName="WaveRing3"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.6" To="0" Duration="0:0:1.2" BeginTime="0:0:0.8"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing3Transform"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.5" To="1.3" Duration="0:0:1.2" BeginTime="0:0:0.8"/>
+            <DoubleAnimation Storyboard.TargetName="WaveRing3Transform"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.5" To="1.3" Duration="0:0:1.2" BeginTime="0:0:0.8"/>
+        </Storyboard>
+
+        <!-- Spinner rotation for processing -->
+        <Storyboard x:Key="SpinnerAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SpinnerTransform"
+                             Storyboard.TargetProperty="Angle"
+                             From="0" To="360" Duration="0:0:1"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Wave rings (behind the main circle) -->
+        <Ellipse x:Name="WaveRing1"
+                 Width="44" Height="44"
+                 Stroke="#EF4444" StrokeThickness="2"
+                 Opacity="0" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <ScaleTransform x:Name="WaveRing1Transform" ScaleX="0.5" ScaleY="0.5"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <Ellipse x:Name="WaveRing2"
+                 Width="44" Height="44"
+                 Stroke="#EF4444" StrokeThickness="2"
+                 Opacity="0" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <ScaleTransform x:Name="WaveRing2Transform" ScaleX="0.5" ScaleY="0.5"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <Ellipse x:Name="WaveRing3"
+                 Width="44" Height="44"
+                 Stroke="#EF4444" StrokeThickness="2"
+                 Opacity="0" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <ScaleTransform x:Name="WaveRing3Transform" ScaleX="0.5" ScaleY="0.5"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- Main circle background -->
+        <Border x:Name="MainBorder"
+                CornerRadius="22"
+                Width="44" Height="44"
+                BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="2" Opacity="0.15"/>
+            </Border.Effect>
+        </Border>
+
+        <!-- Idle: Gray microphone -->
+        <Path x:Name="IdleIcon"
+              Data="M12,2C10.34,2 9,3.34 9,5V11C9,12.66 10.34,14 12,14C13.66,14 15,12.66 15,11V5C15,3.34 13.66,2 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7C7,13.76 9.24,16 12,16C14.76,16 17,13.76 17,11H19Z"
+              Stretch="Uniform"
+              Width="20" Height="20"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Visibility="Visible"/>
+
+        <!-- Recording: Red microphone -->
+        <Path x:Name="RecordingIcon"
+              Data="M12,2C10.34,2 9,3.34 9,5V11C9,12.66 10.34,14 12,14C13.66,14 15,12.66 15,11V5C15,3.34 13.66,2 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7C7,13.76 9.24,16 12,16C14.76,16 17,13.76 17,11H19Z"
+              Fill="#EF4444"
+              Stretch="Uniform"
+              Width="20" Height="20"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              RenderTransformOrigin="0.5,0.5"
+              Visibility="Collapsed">
+            <Path.RenderTransform>
+                <ScaleTransform x:Name="RecordingIconTransform" ScaleX="1" ScaleY="1"/>
+            </Path.RenderTransform>
+        </Path>
+
+        <!-- Processing: Spinner arc -->
+        <Path x:Name="ProcessingSpinner"
+              Data="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2"
+              Stroke="#F59E0B"
+              StrokeThickness="2.5"
+              StrokeStartLineCap="Round"
+              StrokeEndLineCap="Round"
+              StrokeDashArray="2 4"
+              Stretch="Uniform"
+              Width="24" Height="24"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              RenderTransformOrigin="0.5,0.5"
+              Visibility="Collapsed">
+            <Path.RenderTransform>
+                <RotateTransform x:Name="SpinnerTransform" Angle="0"/>
+            </Path.RenderTransform>
+        </Path>
+
+        <!-- Done: Green checkmark -->
+        <Path x:Name="DoneIcon"
+              Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+              Fill="#10B981"
+              Stretch="Uniform"
+              Width="20" Height="20"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Visibility="Collapsed"/>
+    </Grid>
+</Window>
